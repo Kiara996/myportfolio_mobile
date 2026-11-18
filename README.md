@@ -34,10 +34,16 @@ flutter test
 ```text
 myportofolio_mobile/
 ├── lib/
-│   ├── main.dart        # entry point, MaterialApp, tema
-│   └── menu.dart        # MyHomePage, InfoCard, ItemHomepage, ItemCard
+│   ├── main.dart            # entry point, MaterialApp, tema
+│   ├── screens/
+│   │   ├── menu.dart        # MyHomePage, InfoCard
+│   │   └── project_form.dart  # ProjectFormPage (form tambah proyek)
+│   └── widgets/
+│       ├── left_drawer.dart   # drawer navigasi
+│       └── project_card.dart  # ItemHomepage, ItemCard
 ├── test/
-│   └── widget_test.dart
+│   ├── widget_test.dart
+│   └── project_form_test.dart
 ├── docs/
 │   └── tugas/           # dokumentasi tugas mingguan
 └── android/ ios/ web/ ...

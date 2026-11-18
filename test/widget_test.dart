@@ -5,11 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:myportofolio_mobile/main.dart';
-import 'package:myportofolio_mobile/menu.dart';
+import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/widgets/project_card.dart';
 
 Future<void> pumpApp(
   WidgetTester tester, {
@@ -58,7 +59,8 @@ void main() {
   ) async {
     await pumpApp(tester);
 
-    final plainItems = itemsOf(tester).where((i) => i.confirmMessage == null);
+    final plainItems = itemsOf(tester)
+        .where((i) => i.confirmMessage == null && i.name != 'Tambah Proyek');
     for (final item in plainItems) {
       await tester.tap(find.text(item.name));
       await tester.pump();
