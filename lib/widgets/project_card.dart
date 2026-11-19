@@ -1,19 +1,26 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:myportofolio_mobile/screens/project_form.dart';
 
-/// Data satu tombol menu. [confirmMessage] diisi bila aksi perlu dikonfirmasi.
+/// Data satu tombol menu. [destination] diisi bila tombol membuka halaman lain,
+/// [confirmMessage] diisi bila aksi perlu dikonfirmasi.
 class ItemHomepage {
   final String name;
   final IconData icon;
   final Color color;
   final String? confirmMessage;
+  final WidgetBuilder? destination;
 
-  ItemHomepage(this.name, this.icon, this.color, {this.confirmMessage});
+  ItemHomepage(
+    this.name,
+    this.icon,
+    this.color, {
+    this.confirmMessage,
+    this.destination,
+  });
 }
 
 /// Tombol menu berbentuk kartu. Menampilkan SnackBar saat ditekan, membuka
-/// [ProjectFormPage] untuk "Tambah Proyek", dan dialog konfirmasi tambahan
-/// jika item memiliki [ItemHomepage.confirmMessage].
+/// [ItemHomepage.destination] lewat Navigator.push bila ada, dan dialog
+/// konfirmasi tambahan jika item memiliki [ItemHomepage.confirmMessage].
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
 
@@ -28,11 +35,9 @@ class ItemCard extends StatelessWidget {
         SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")),
       );
 
-    if (item.name == "Tambah Proyek") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ProjectFormPage()),
-      );
+    final destination = item.destination;
+    if (destination != null) {
+      Navigator.push(context, MaterialPageRoute(builder: destination));
       return;
     }
 
