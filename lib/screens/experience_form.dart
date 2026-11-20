@@ -72,15 +72,8 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
   String? _validateStart(String? value) =>
       _startedAt == null ? 'Tanggal mulai wajib dipilih!' : null;
 
-  // Tanggal selesai boleh kosong (masih berlangsung), tapi tidak boleh sebelum mulai.
-  String? _validateEnd(String? value) {
-    final start = _startedAt;
-    final end = _endedAt;
-    if (end == null || start == null) return null;
-    return end.isBefore(start)
-        ? 'Tanggal selesai tidak boleh sebelum tanggal mulai!'
-        : null;
-  }
+  String? _validateEnd(String? value) =>
+      endNotBeforeStart(_startedAt, _endedAt);
 
   Future<void> _pickStart() async {
     final now = DateTime.now();

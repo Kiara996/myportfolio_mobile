@@ -65,6 +65,21 @@ void main() {
     });
   });
 
+  group('endNotBeforeStart', () {
+    final start = DateTime(2025, 6, 10);
+
+    test('menolak tanggal selesai sebelum mulai', () {
+      expect(endNotBeforeStart(start, DateTime(2025, 6, 9)), isNotNull);
+    });
+
+    test('menerima hari yang sama, sesudahnya, atau kosong', () {
+      expect(endNotBeforeStart(start, DateTime(2025, 6, 10)), isNull);
+      expect(endNotBeforeStart(start, DateTime(2026, 1, 1)), isNull);
+      expect(endNotBeforeStart(start, null), isNull);
+      expect(endNotBeforeStart(null, DateTime(2025, 1, 1)), isNull);
+    });
+  });
+
   test('stripTags membuang tag dan merapikan spasi', () {
     expect(stripTags(' <p>Halo <b>dunia</b></p> '), 'Halo dunia');
   });

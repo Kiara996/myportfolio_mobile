@@ -43,3 +43,12 @@ String? optionalImageUrl(String? value) {
   }
   return null;
 }
+
+/// Tanggal selesai boleh kosong (masih berlangsung), tapi tidak boleh sebelum
+/// tanggal mulai. Hari yang sama masih diterima.
+String? endNotBeforeStart(DateTime? start, DateTime? end) {
+  if (start == null || end == null) return null;
+  return end.isBefore(start)
+      ? 'Tanggal selesai tidak boleh sebelum tanggal mulai!'
+      : null;
+}
