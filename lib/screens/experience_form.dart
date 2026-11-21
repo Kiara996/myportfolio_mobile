@@ -215,6 +215,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                     _gap(
                       DropdownButtonFormField<String>(
                         initialValue: _category,
+                        isExpanded: true,
                         decoration: _decoration('Kategori Pengalaman'),
                         items: [
                           for (final entry in experienceCategories.entries)

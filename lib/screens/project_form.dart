@@ -138,6 +138,7 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                     ),
                   ),
                   initialValue: _category,
+                  isExpanded: true,
                   items: _categories
                       .map(
                         (category) => DropdownMenuItem(
