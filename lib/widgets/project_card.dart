@@ -18,8 +18,8 @@ class ItemHomepage {
   });
 }
 
-/// Tombol menu berbentuk kartu. Menampilkan SnackBar saat ditekan, membuka
-/// [ItemHomepage.destination] lewat Navigator.push bila ada, dan dialog
+/// Tombol menu berbentuk kartu. Membuka [ItemHomepage.destination] lewat
+/// Navigator.push bila ada, kalau tidak menampilkan SnackBar, plus dialog
 /// konfirmasi tambahan jika item memiliki [ItemHomepage.confirmMessage].
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
@@ -27,6 +27,14 @@ class ItemCard extends StatelessWidget {
   const ItemCard(this.item, {super.key});
 
   Future<void> _onTap(BuildContext context) async {
+    // Pindah halaman tanpa SnackBar, karena SnackBar bakal ikut tampil di
+    // halaman tujuan dan menutupi tombol di bagian bawah form.
+    final destination = item.destination;
+    if (destination != null) {
+      Navigator.push(context, MaterialPageRoute(builder: destination));
+      return;
+    }
+
     // Messenger diambil sebelum await agar context tidak dipakai setelah jeda async.
     final messenger = ScaffoldMessenger.of(context);
     messenger
@@ -34,12 +42,6 @@ class ItemCard extends StatelessWidget {
       ..showSnackBar(
         SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")),
       );
-
-    final destination = item.destination;
-    if (destination != null) {
-      Navigator.push(context, MaterialPageRoute(builder: destination));
-      return;
-    }
 
     final confirmMessage = item.confirmMessage;
     if (confirmMessage == null) return;
