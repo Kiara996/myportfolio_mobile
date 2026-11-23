@@ -86,8 +86,8 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Center(child: Text('Add Project Form')),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       drawer: const LeftDrawer(),
       body: Form(
@@ -194,19 +194,13 @@ class _ProjectFormPageState extends State<ProjectFormPage> {
                 alignment: Alignment.bottomCenter,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.indigo),
-                    ),
+                  child: FilledButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _showSummary();
                       }
                     },
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text("Save"),
                   ),
                 ),
               ),
