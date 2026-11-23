@@ -128,6 +128,14 @@ void main() {
       expect(find.text('Portofolio Mobile'), findsNothing);
     });
 
+    testWidgets('tidak overflow di layar 320 dp', (tester) async {
+      await openForm(tester);
+      tester.view.physicalSize = const Size(320, 640);
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('kategori yang dipilih muncul di dialog', (tester) async {
       await openForm(tester);
       await fillRequired(tester);

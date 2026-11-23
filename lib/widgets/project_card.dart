@@ -1,25 +1,40 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:myportofolio_mobile/screens/project_form.dart';
 
-/// Data satu tombol menu. [confirmMessage] diisi bila aksi perlu dikonfirmasi.
+/// Data satu tombol menu. [destination] diisi bila tombol membuka halaman lain,
+/// [confirmMessage] diisi bila aksi perlu dikonfirmasi.
 class ItemHomepage {
   final String name;
   final IconData icon;
   final Color color;
   final String? confirmMessage;
+  final WidgetBuilder? destination;
 
-  ItemHomepage(this.name, this.icon, this.color, {this.confirmMessage});
+  ItemHomepage(
+    this.name,
+    this.icon,
+    this.color, {
+    this.confirmMessage,
+    this.destination,
+  });
 }
 
-/// Tombol menu berbentuk kartu. Menampilkan SnackBar saat ditekan, membuka
-/// [ProjectFormPage] untuk "Tambah Proyek", dan dialog konfirmasi tambahan
-/// jika item memiliki [ItemHomepage.confirmMessage].
+/// Tombol menu berbentuk kartu. Membuka [ItemHomepage.destination] lewat
+/// Navigator.push bila ada, kalau tidak menampilkan SnackBar, plus dialog
+/// konfirmasi tambahan jika item memiliki [ItemHomepage.confirmMessage].
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
 
   const ItemCard(this.item, {super.key});
 
   Future<void> _onTap(BuildContext context) async {
+    // Pindah halaman tanpa SnackBar, karena SnackBar bakal ikut tampil di
+    // halaman tujuan dan menutupi tombol di bagian bawah form.
+    final destination = item.destination;
+    if (destination != null) {
+      Navigator.push(context, MaterialPageRoute(builder: destination));
+      return;
+    }
+
     // Messenger diambil sebelum await agar context tidak dipakai setelah jeda async.
     final messenger = ScaffoldMessenger.of(context);
     messenger
@@ -27,14 +42,6 @@ class ItemCard extends StatelessWidget {
       ..showSnackBar(
         SnackBar(content: Text("Kamu telah menekan tombol ${item.name}!")),
       );
-
-    if (item.name == "Tambah Proyek") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ProjectFormPage()),
-      );
-      return;
-    }
 
     final confirmMessage = item.confirmMessage;
     if (confirmMessage == null) return;

@@ -60,7 +60,7 @@ void main() {
     await pumpApp(tester);
 
     final plainItems = itemsOf(tester)
-        .where((i) => i.confirmMessage == null && i.name != 'Tambah Proyek');
+        .where((i) => i.confirmMessage == null && i.destination == null);
     for (final item in plainItems) {
       await tester.tap(find.text(item.name));
       await tester.pump();
