@@ -8,18 +8,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
-import 'package:myportofolio_mobile/main.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
-Future<void> pumpApp(
+import 'support/fake_backend.dart';
+
+Future<FakeBackend> pumpHome(
   WidgetTester tester, {
   Size size = const Size(400, 800),
+  bool loggedIn = false,
 }) async {
-  tester.view.physicalSize = size;
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(const MyApp());
+  final backend = FakeBackend();
+  await pumpApp(tester, backend, size: size);
+  if (loggedIn) await signIn(tester);
+  return backend;
 }
 
 List<ItemHomepage> itemsOf(WidgetTester tester) =>
@@ -27,7 +29,7 @@ List<ItemHomepage> itemsOf(WidgetTester tester) =>
 
 void main() {
   testWidgets('menampilkan identitas pada tiga InfoCard', (tester) async {
-    await pumpApp(tester);
+    await pumpHome(tester);
 
     expect(find.byType(InfoCard), findsNWidgets(3));
     for (final label in ['NPM', 'Name', 'Class']) {
@@ -39,7 +41,7 @@ void main() {
   });
 
   testWidgets('setiap ItemCard memakai warna uniknya sendiri', (tester) async {
-    await pumpApp(tester);
+    await pumpHome(tester);
 
     final items = itemsOf(tester);
     expect(items.length, greaterThanOrEqualTo(3));
@@ -57,7 +59,7 @@ void main() {
   testWidgets('tombol biasa menampilkan SnackBar sesuai namanya', (
     tester,
   ) async {
-    await pumpApp(tester);
+    await pumpHome(tester);
 
     final plainItems = itemsOf(tester)
         .where((i) => i.confirmMessage == null && i.destination == null);
@@ -74,8 +76,22 @@ void main() {
   });
 
   group('Logout', () {
-    testWidgets('menampilkan SnackBar dan dialog konfirmasi', (tester) async {
-      await pumpApp(tester);
+    testWidgets('belum login hanya menampilkan SnackBar tanpa dialog', (
+      tester,
+    ) async {
+      await pumpHome(tester);
+
+      await tester.tap(find.text('Logout'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Kamu belum login.'), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('sudah login menampilkan SnackBar dan dialog konfirmasi', (
+      tester,
+    ) async {
+      await pumpHome(tester, loggedIn: true);
 
       await tester.tap(find.text('Logout'));
       await tester.pumpAndSettle();
@@ -85,7 +101,7 @@ void main() {
     });
 
     testWidgets('Batal menutup dialog tanpa logout', (tester) async {
-      await pumpApp(tester);
+      await pumpHome(tester, loggedIn: true);
 
       await tester.tap(find.text('Logout'));
       await tester.pumpAndSettle();
@@ -94,10 +110,13 @@ void main() {
 
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.text('Logout berhasil.'), findsNothing);
+      expect(authOf(tester).isLoggedIn, isTrue);
     });
 
-    testWidgets('konfirmasi menampilkan SnackBar berhasil', (tester) async {
-      await pumpApp(tester);
+    testWidgets('konfirmasi mencabut token dan menampilkan SnackBar', (
+      tester,
+    ) async {
+      final backend = await pumpHome(tester, loggedIn: true);
 
       await tester.tap(find.text('Logout'));
       await tester.pumpAndSettle();
@@ -106,6 +125,9 @@ void main() {
 
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.text('Logout berhasil.'), findsOneWidget);
+      expect(authOf(tester).isLoggedIn, isFalse);
+      final request = backend.lastRequestTo('/api/v1/auth/logout/');
+      expect(request!.headers['Authorization'], 'Token $validToken');
     });
   });
 
@@ -120,7 +142,7 @@ void main() {
 
     for (final entry in sizes.entries) {
       testWidgets('tidak overflow di ${entry.key}', (tester) async {
-        await pumpApp(tester, size: entry.value);
+        await pumpHome(tester, size: entry.value);
 
         expect(tester.takeException(), isNull);
         expect(find.byType(ItemCard), findsNWidgets(itemsOf(tester).length));
@@ -134,10 +156,10 @@ void main() {
             .crossAxisCount;
       }
 
-      await pumpApp(tester, size: const Size(360, 640));
+      await pumpHome(tester, size: const Size(360, 640));
       expect(columns(), 3);
 
-      await pumpApp(tester, size: const Size(1200, 800));
+      await pumpHome(tester, size: const Size(1200, 800));
       expect(columns(), 6);
     });
   });
