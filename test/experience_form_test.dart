@@ -6,6 +6,8 @@ import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 
+import 'support/fake_backend.dart';
+
 Future<void> pumpApp(
   WidgetTester tester, {
   Size size = const Size(400, 900),
@@ -13,7 +15,7 @@ Future<void> pumpApp(
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  await tester.pumpWidget(const MyApp());
+  await tester.pumpWidget(MyApp(apiClient: FakeBackend().client));
 }
 
 Future<void> openDrawer(WidgetTester tester) async {
@@ -87,6 +89,7 @@ void main() {
       tester,
     ) async {
       await openFormFromCard(tester);
+      await signIn(tester);
 
       await openDrawer(tester);
       await tester.tap(find.text('Add Project'));
