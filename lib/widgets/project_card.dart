@@ -1,13 +1,20 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 /// Data satu tombol menu. [destination] diisi bila tombol membuka halaman lain,
-/// [confirmMessage] diisi bila aksi perlu dikonfirmasi.
+/// [requiresLogin] meminta login dulu sebelum halaman dibuka, dan
+/// [confirmMessage] diisi bila aksi perlu dikonfirmasi. [isLogout] menandai
+/// tombol yang mengakhiri sesi.
 class ItemHomepage {
   final String name;
   final IconData icon;
   final Color color;
   final String? confirmMessage;
   final WidgetBuilder? destination;
+  final bool requiresLogin;
+  final bool isLogout;
 
   ItemHomepage(
     this.name,
@@ -15,6 +22,8 @@ class ItemHomepage {
     this.color, {
     this.confirmMessage,
     this.destination,
+    this.requiresLogin = false,
+    this.isLogout = false,
   });
 }
 
@@ -31,12 +40,23 @@ class ItemCard extends StatelessWidget {
     // halaman tujuan dan menutupi tombol di bagian bawah form.
     final destination = item.destination;
     if (destination != null) {
+      if (item.requiresLogin && !await ensureLoggedIn(context)) return;
+      if (!context.mounted) return;
       Navigator.push(context, MaterialPageRoute(builder: destination));
       return;
     }
 
-    // Messenger diambil sebelum await agar context tidak dipakai setelah jeda async.
+    // Messenger dan auth diambil sebelum await agar context tidak dipakai setelah jeda async.
     final messenger = ScaffoldMessenger.of(context);
+    final auth = context.read<AuthState>();
+
+    if (item.isLogout && !auth.isLoggedIn) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Kamu belum login.')));
+      return;
+    }
+
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -65,6 +85,7 @@ class ItemCard extends StatelessWidget {
     );
 
     if (confirmed == true) {
+      if (item.isLogout) await auth.logout();
       messenger
         ..hideCurrentSnackBar()
         ..showSnackBar(SnackBar(content: Text("${item.name} berhasil.")));

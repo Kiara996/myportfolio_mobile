@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
+import 'package:myportofolio_mobile/screens/project_list_screen.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
 import 'package:myportofolio_mobile/widgets/project_card.dart';
 
@@ -16,12 +17,18 @@ class MyHomePage extends StatelessWidget {
   final String kelas = "PBP F";
 
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Proyek", Icons.folder, Colors.blue.shade700),
+    ItemHomepage(
+      "Lihat Proyek",
+      Icons.folder,
+      Colors.blue.shade700,
+      destination: (context) => const ProjectListScreen(),
+    ),
     ItemHomepage(
       "Tambah Proyek",
       Icons.add_circle,
       Colors.green.shade700,
       destination: (context) => const ProjectFormPage(),
+      requiresLogin: true,
     ),
     ItemHomepage("Lihat Pengalaman", Icons.work, Colors.deepPurple.shade400),
     ItemHomepage(
@@ -37,6 +44,7 @@ class MyHomePage extends StatelessWidget {
       Icons.logout,
       Colors.red.shade700,
       confirmMessage: "Yakin ingin keluar dari MyPortfolio?",
+      isLogout: true,
     ),
   ];
 
